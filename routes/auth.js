@@ -2,6 +2,7 @@ const User = require("../models/user");
 const bycrypt = require("bcryptjs");
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const isAuthenticated = require("../config/authorize");
 
 router.post("/register", async (req, res) => {
   try {
@@ -37,7 +38,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login",  async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
