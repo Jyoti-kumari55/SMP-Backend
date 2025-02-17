@@ -44,6 +44,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+app.options('*', cors(corsOptions));
 // app.use((req, res, next) => {
 //   res.header("Access-Control-Allow-Origin", "*"); 
 //   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"); 
