@@ -21,8 +21,8 @@ dotenv.config();
 const corsOptions = {
   origin: "*",
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
   optionSuccessStatus: 200,
 };
 
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"); 
   res.header(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   ); 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -58,13 +58,6 @@ app.use((req, res, next) => {
   next();
 });
 // app.use(cors());
-
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);  // Frontend URL
-//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//   next();
-// });
 
 const storage = multer.diskStorage({
    fileFilter: (req, file, cb) => {
