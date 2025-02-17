@@ -20,8 +20,8 @@ const app = express();
 dotenv.config();
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
-  credentials: process.env.CORS_CREDENTIAL,
-  allowedHeaders: process.env.CORS_HEADERS,
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
   optionSuccessStatus: 200,
 };
 
@@ -42,6 +42,20 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*"); 
+//   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"); 
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   ); 
+//   if (req.method === "OPTIONS") {
+//     return res.status(200).end();
+//   }
+//   next();
+// });
+// app.use(cors());
 
 const storage = multer.diskStorage({
    fileFilter: (req, file, cb) => {
