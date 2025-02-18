@@ -18,14 +18,35 @@ const isAuthenticated = require("./config/authorize");
 const app = express();
 
 dotenv.config();
+// const corsOptions = {
+//   origin: process.env.FRONTEND_URL ||  "http://localhost:3000",
+//   credentials: true,
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
+//   optionSuccessStatus: 200,
+// };
+
+const allowedOrigins = [
+  "http://localhost:3000",  // Local development
+  "https://smp-frontend-beta.vercel.app",  // Production
+];
+
+// CORS options to check against incoming requests
 const corsOptions = {
-  origin: "*",
-  credentials: true,
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      // Allow the request if the origin is in the allowedOrigins list or if there's no origin (for non-browser requests)
+      callback(null, true);
+    } else {
+      // Reject the request if the origin is not allowed
+      callback(new Error("CORS not allowed"), false);
+    }
+  },
+  credentials: true,  // Allow credentials (cookies, etc.)
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
   optionSuccessStatus: 200,
 };
-
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
@@ -44,19 +65,18 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-app.options('*', cors(corsOptions));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); 
-  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"); 
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  ); 
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*"); 
+//   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"); 
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   ); 
+//   if (req.method === "OPTIONS") {
+//     return res.status(200).end();
+//   }
+//   next();
+// });
 // app.use(cors());
 
 const storage = multer.diskStorage({
@@ -104,6 +124,8 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);
+
+app.options('*', cors(corsOptions));
 
 const PORT = 8080;
 app.listen(PORT, () => {
