@@ -6,7 +6,15 @@ const isAuthenticated = async (req, res, next) => {
  //   const token = req.header("Authorization")?.split(" ")[1];
  //console.log("wwww: ", req.cookies, "222", req.headers, req.header);
 
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
+    let token = req.cookies.token;
+
+
+      // If no token in cookies, check the Authorization header
+      if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+        token = req.headers.authorization.split(" ")[1];
+    }
+
     if(!token){
       return res.status(401).json({ message: 'No token, authorization denied' });
     }
@@ -22,21 +30,3 @@ const isAuthenticated = async (req, res, next) => {
 
 module.exports = isAuthenticated;
 
-// /middleware/auth.js
-
-// const protect = (req, res, next) => {
-//   const token = req.header('Authorization')?.replace('Bearer ', '');
-//   if (!token) {
-//     return res.status(401).json({ message: 'No token, authorization denied' });
-//   }
-
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     req.user = decoded.id; // Save user ID in request
-//     next();
-//   } catch (error) {
-//     res.status(401).json({ message: 'Token is not valid' });
-//   }
-// };
-
-// module.exports = protect;

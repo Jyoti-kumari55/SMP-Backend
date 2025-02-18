@@ -68,7 +68,7 @@ router.post("/login",  async (req, res) => {
       expiresIn: "8h",
       httpOnly: true,
       // secure: false,
-       secure: process.env.NODE_ENV === "production",  // Set secure flag for production
+      secure: process.env.NODE_ENV === "production",  
       sameSite: "None",
     });
 
@@ -87,7 +87,7 @@ router.get("/logout", (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
     });
     res.status(200).json({ message: `You are successfully logged out.` });
   } catch (error) {
