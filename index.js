@@ -125,7 +125,7 @@ app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);
 
-// app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 const PORT = 8080;
 app.listen(PORT, () => {
