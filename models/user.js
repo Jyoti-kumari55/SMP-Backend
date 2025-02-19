@@ -47,5 +47,8 @@ const userSchema = new mongoose.Schema({
      
 }, {timestamps: true});
 
+userSchema.index({ email: 1 });
+userSchema.index({ username: 1 });
+
 const User = mongoose.model('SocialUser', userSchema);
 module.exports = User;

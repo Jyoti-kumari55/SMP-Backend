@@ -16,6 +16,10 @@ router.post("/register", async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ error: "Email already in use." });
     }
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ error: "Username already in use." });
+    }
     const salt = await bycrypt.genSalt(16);
     const hashedPassword = await bycrypt.hash(password, salt);
 
