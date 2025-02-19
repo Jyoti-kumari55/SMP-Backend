@@ -9,7 +9,7 @@ const connectionOptions = {
   connectTimeoutMS: 10000,  
 };
 mongoose
-  .connect(mongoURI)
+  .connect(mongoURI, connectionOptions)
   .then(() => {
     console.log('Connected to the MongoDB Successfully!')
   })
