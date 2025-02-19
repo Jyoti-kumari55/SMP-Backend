@@ -5,7 +5,6 @@ const mongoURI = process.env.MONGODB;
 const connectionOptions = {
   useNewUrlParser: true,  
   useUnifiedTopology: true,  
-  serverSelectionTimeoutMS: 5000,  
   socketTimeoutMS: 45000, 
   connectTimeoutMS: 10000,  
 };
