@@ -47,11 +47,6 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
       }
     });
 
-    // if (req.body.password) {
-    //   const salt = await bycrypt.genSalt(16);
-    //   user.password = await bycrypt.hash(req.body.password, salt);
-    // }
-
     const updatedUser = await user.save();
     res
       .status(200)
@@ -65,6 +60,7 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
 });
 
 // update user with password and images(cover and profile)
+
 // router.put("/:userId", isAuthenticated, async (req, res) => {
 //   try {
 //     const { userId } = req.params;
@@ -130,6 +126,7 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
 //     res.status(500).json({ message: "Internal server error.", error: error.message });
 //   }
 // });
+
 
 // Delete a user
 router.delete("/:userId", isAuthenticated, async (req, res) => {
@@ -199,19 +196,14 @@ router.get("/bookmark", isAuthenticated, async (req, res) => {
         populate: {
           path: "userId",
           select: "-email -password",
-          //select: "name username profilePicture"
         },
       })
       .select("name username profilePicture");
 
-    //  console.log("Populated User Bookmarks:", user.bookmarks);
-
-    // Check if the user has bookmarks
     if (!user.bookmarks || user.bookmarks.length === 0) {
       return res.status(404).json({ message: "No bookmarked posts found." });
     }
 
-    // If user doesn't exist
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -221,14 +213,9 @@ router.get("/bookmark", isAuthenticated, async (req, res) => {
       owner: post.userId,
       // isBookmarked: true
     }));
-    // Send the bookmarks data, including post details and author details
     res.status(200).json({
       message: "Bookmarked posts fetched successfully.",
       bookmarks: bookmarkUserDeatils,
-      // bookmarks: user.bookmarks.map(post => ({
-      //   post: post, // The post details
-      //   author: post.userId // The author details (user who posted)
-      // }))
     });
   } catch (error) {
     console.error(error);
@@ -382,30 +369,6 @@ router.get("/friends", isAuthenticated, async (req, res) => {
 });
 
 //Suggested Users
-// router.get("/suggestedUsers", isAuthenticated, async (req, res) => {
-//   try {
-//     const loggedInUser = await User.findById(req.user);
-//     const users = await User.find({}).select("-password -bookmarks -email");
-//     let suggestedUsers = users.filter((user) => {
-//       return (
-//         !loggedInUser.followings.includes(user._id) &&
-//         user._id.toString() !== loggedInUser._id.toString()
-//       );
-//     });
-
-//     if (suggestedUsers.length > 10) {
-//       suggestedUsers = suggestedUsers.slice(0, 8);
-//     }
-//     return res.status(200).json({ Users: suggestedUsers });
-//   } catch (error) {
-//     console.log(error);
-//     res
-//       .status(500)
-//       .json({ message: "Internal server error.", error: error.message });
-//   }
-// });
-
-
 router.get("/suggestedUsers", isAuthenticated, async (req, res) => {
   try {
     const loggedInUser = await User.findById(req.user);
@@ -562,9 +525,8 @@ router.get("/userList/:userId", isAuthenticated, async (req, res) => {
     // Find the user with the provided userId and exclude sensitive fields
     const user = await User.findById(userId)
       .select("-password -bookmarks -email")
-      .populate("followers", "-password -bookmarks -email") // Populate followers
-      .populate("followings", "-password -bookmarks -email"); // Populate followings
-
+      .populate("followers", "-password -bookmarks -email") 
+      .populate("followings", "-password -bookmarks -email"); 
     if (!user) {
       return res.status(400).json({ message: "No user found with this ID." });
     }
@@ -575,18 +537,15 @@ router.get("/userList/:userId", isAuthenticated, async (req, res) => {
       .populate("userId", "-password -email");
 
     const populatedFollowers = await User.find({
-      _id: { $in: user.followers },
+      _id: { $in: user.followers, $nin: [] },
     }).select("-password -bookmarks -email");
     const populatedFollowings = await User.find({
-      _id: { $in: user.followings },
+      _id: { $in: user.followings, $nin: [] },
     }).select("-password -bookmarks -email");
 
     return res.status(200).json({
       message: "User found",
       user: user,
-      // posts: allPosts,
-      // followers: user.followers, // Return populated followers
-      // following: user.followings, // Return populated following
       followers: populatedFollowers,
       followings: populatedFollowings,
     });

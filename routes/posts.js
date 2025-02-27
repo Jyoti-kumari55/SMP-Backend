@@ -40,16 +40,10 @@ router.get("/allPosts", isAuthenticated, async (req, res) => {
   try {
     const currentUser = await User.findById(req.user);
     
-    // console.log(req.user)
-    // console.log(currentUser);
-
     const [allPosts, currentUserPosts] = await Promise.all([
       Post.find({postId: {$exists: false}}).populate("userId", "-password"),
       Post.find({ userId: currentUser._id, postId: {$exists: false} }).populate("userId", "-password"),
     ]);
-
-    // console.log("allPosts", allPosts);
-    // console.log(" currentUser", currentUserPosts);
 
     const followingUserPosts = allPosts.filter(
       (post) =>
@@ -110,16 +104,14 @@ router.get("/:postId", isAuthenticated, async (req, res) => {
     const post = await Post.findById(postId)
        .populate("userId", "-email -password")
        .populate({
-        path: "comments",  // Populate the 'comments' array
+        path: "comments",  
         populate: {
-          path: "userId",  // Populate the userId field within each comment
-          select: "-email -password"  // Exclude sensitive fields from the comment's user
+          path: "userId",  
+          select: "-email -password"  
         }
       });
 
-      const comments =   await Post.find({postId}).populate("userId", "-password");
-
-    
+      const comments =   await Post.find({postId}).populate("userId", "-password");  
     if (!post) {
       return res.status(404).json({ message: "Post not found." });
     }
@@ -155,14 +147,7 @@ router.put("/edit/:postId", isAuthenticated, async (req, res) => {
     res
         .status(200)
         .json({ message: "Post has been updated. ", post: updatedPostData });
-
-    // if (updatedPost) {
-    //   res
-    //     .status(200)
-    //     .json({ message: "Post has been updated. ", post: updatedPost });
-    // } else {
-    //   res.status(404).json({ error: "Post not found." });
-    // }
+        
   } catch (error) {
     console.error(error);
     res

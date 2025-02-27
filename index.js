@@ -42,7 +42,7 @@ const corsOptions = {
       callback(new Error("CORS not allowed"), false);
     }
   },
-  credentials: true,  // Allow credentials (cookies, etc.)
+  credentials: true,  
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
   optionSuccessStatus: 200,
@@ -107,7 +107,7 @@ app.post(
 
       res.status(200).json({
         message: "Image uploaded successfully!",
-        imageUrl: result.secure_url, // URL of the uploaded image
+        imageUrl: result.secure_url, 
         imageId: result.public_id, // Public ID of the image on Cloudinary
       });
     } catch (error) {
