@@ -4,6 +4,7 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../config/authorize");
 
+// Register a user
 router.post("/register", async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
@@ -42,7 +43,8 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login",  async (req, res) => {
+//Login a user
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -72,7 +74,7 @@ router.post("/login",  async (req, res) => {
       expiresIn: "8h",
       httpOnly: true,
       secure: false,
-      // secure: process.env.NODE_ENV === "production",  
+      // secure: process.env.NODE_ENV === "production",
       // sameSite: "None",
     });
 
@@ -87,11 +89,11 @@ router.post("/login",  async (req, res) => {
   }
 });
 
+// Logout a user
 router.get("/logout", (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      
     });
     res.status(200).json({ message: `You are successfully logged out.` });
   } catch (error) {
@@ -100,7 +102,7 @@ router.get("/logout", (req, res) => {
   }
 });
 
-// Validate Email Route
+// Validate Email
 router.get("/validate-email", async (req, res) => {
   try {
     const { email } = req.query;
@@ -116,11 +118,13 @@ router.get("/validate-email", async (req, res) => {
     return res.status(200).json({ exists: true });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Server error.", details: error.message });
+    return res
+      .status(500)
+      .json({ error: "Server error.", details: error.message });
   }
 });
 
-// Password Update Route (For Forgot Password)
+// Password Update (For Forgot Password)
 router.put("/reset-password", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
@@ -131,19 +135,24 @@ router.put("/reset-password", async (req, res) => {
     }
 
     if (newPassword && newPassword.length < 6) {
-      return res.status(400).json({ error: "New password must be at least 6 characters long." });
+      return res
+        .status(400)
+        .json({ error: "New password must be at least 6 characters long." });
     }
 
     const salt = await bycrypt.genSalt(10);
     user.password = await bycrypt.hash(newPassword, salt);
 
     const updatedUser = await user.save();
-    return res.status(200).json({ message: "Password updated successfully.", user: updatedUser });
+    return res
+      .status(200)
+      .json({ message: "Password updated successfully.", user: updatedUser });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Internal server error.", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 });
-
 
 module.exports = router;

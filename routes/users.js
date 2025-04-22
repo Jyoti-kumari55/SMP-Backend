@@ -42,7 +42,11 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
     }
 
     Object.keys(req.body).forEach((key) => {
-      if (key !== "userId" && key !== "currentPassword" && key !== "newPassword") {
+      if (
+        key !== "userId" &&
+        key !== "currentPassword" &&
+        key !== "newPassword"
+      ) {
         user[key] = req.body[key];
       }
     });
@@ -58,75 +62,6 @@ router.put("/:userId", isAuthenticated, async (req, res) => {
       .json({ message: "Internal server error.", error: error.message });
   }
 });
-
-// update user with password and images(cover and profile)
-
-// router.put("/:userId", isAuthenticated, async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     let { profilePicture, coverPicture, currentPassword, newPassword } = req.body;
-
-//     const loggedInUser = req.user;
-//     console.log(req.user);
-
-//     // Check if the logged-in user is trying to update their own profile
-//     if (userId !== loggedInUser.toString()) {
-//       return res.status(403).json({ error: "You can only update your own profile." });
-//     }
-
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found." });
-//     }
-
-//     // Password update validation
-//     if (currentPassword && newPassword) {
-//       const isMatch = await bcrypt.compare(currentPassword, user.password);
-//       if (!isMatch) {
-//         return res.status(400).json({ error: "Current password is incorrect." });
-//       }
-//       if (newPassword.length < 6) {
-//         return res.status(400).json({ error: "New password must be at least 6 characters long." });
-//       }
-
-//       const salt = await bycrypt.genSalt(10);
-//       user.password = await bycrypt.hash(newPassword, salt);
-//     }
-
-//     // Handle profile picture update
-//     if (profilePicture) {
-//       if (user.profilePicture) {
-//         // Assuming Cloudinary is being used to handle image uploads
-//         await cloudinary.uploader.destroy(user.profilePicture.split("/").pop().split(".")[0]);
-//       }
-//       const uploadedResponse = await cloudinary.uploader.upload(profilePicture);
-//       user.profilePicture = uploadedResponse.secure_url;
-//     }
-
-//     // Handle cover picture update
-//     if (coverPicture) {
-//       if (user.coverPicture) {
-//         await cloudinary.uploader.destroy(user.coverPicture.split("/").pop().split(".")[0]);
-//       }
-//       const uploadedResponse = await cloudinary.uploader.upload(coverPicture);
-//       user.coverPicture = uploadedResponse.secure_url;
-//     }
-
-//     // Update other fields from req.body (excluding userId and password)
-//     Object.keys(req.body).forEach((key) => {
-//       if (key !== "userId" && key !== "currentPassword" && key !== "newPassword") {
-//         user[key] = req.body[key];
-//       }
-//     });
-
-//     const updatedUser = await user.save();
-//     res.status(200).json({ message: "Account updated successfully.", user: updatedUser });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: "Internal server error.", error: error.message });
-//   }
-// });
-
 
 // Delete a user
 router.delete("/:userId", isAuthenticated, async (req, res) => {
@@ -244,32 +179,6 @@ router.post("/removeBookmark/:postId", async (req, res) => {
   }
 });
 
-// Get all bookmarked post
-
-// router.get("/bookmark", isAuthenticated, async (req, res) => {
-//   try {
-//     const user = await User.findById(req.user)
-//       .populate("bookmarks")
-//       .select("name username profilePicture");
-
-//     if (!user.bookmarks || user.bookmarks.length === 0) {
-//       return res.status(404).json({ message: "No bookmarked posts found." });
-//     }
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-//     res.status(200).json({
-//       message: "Bookmarked posts fetched successfully.",
-//       bookmarks: user.bookmarks,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res
-//       .status(500)
-//       .json({ message: "Internal server error.", error: error.message });
-//   }
-// });
-
 //Get all Users
 router.get("/allUsers", isAuthenticated, async (req, res) => {
   try {
@@ -384,7 +293,8 @@ router.get("/suggestedUsers", isAuthenticated, async (req, res) => {
 
       // Ensure the user is either following the logged-in user or a new user (no followers)
       const isNotFollower = !user.followers.includes(loggedInUser._id);
-      const isNewUser = user.followers.length === 0 || user.followings.length === 0; // Assuming a user with no followers is new
+      const isNewUser =
+        user.followers.length === 0 || user.followings.length === 0; // Assuming a user with no followers is new
 
       const isNotFollowingLoggedInUser = !user.followings.includes(
         loggedInUser._id
@@ -525,8 +435,8 @@ router.get("/userList/:userId", isAuthenticated, async (req, res) => {
     // Find the user with the provided userId and exclude sensitive fields
     const user = await User.findById(userId)
       .select("-password -bookmarks -email")
-      .populate("followers", "-password -bookmarks -email") 
-      .populate("followings", "-password -bookmarks -email"); 
+      .populate("followers", "-password -bookmarks -email")
+      .populate("followings", "-password -bookmarks -email");
     if (!user) {
       return res.status(400).json({ message: "No user found with this ID." });
     }

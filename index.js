@@ -18,27 +18,17 @@ const isAuthenticated = require("./config/authorize");
 const app = express();
 
 dotenv.config();
-// const corsOptions = {
-//   origin: process.env.FRONTEND_URL ||  "http://localhost:3000",
-//   credentials: true,
-//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
-//   optionSuccessStatus: 200,
-// };
 
 const allowedOrigins = [
-  "http://localhost:3000",  // Local development
-  "https://smp-frontend-beta.vercel.app",  // Production
+  "http://localhost:3000",  
+  "https://smp-frontend-beta.vercel.app",  
 ];
 
-// CORS options to check against incoming requests
 const corsOptions = {
   origin: function (origin, callback) {
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      // Allow the request if the origin is in the allowedOrigins list or if there's no origin (for non-browser requests)
       callback(null, true);
     } else {
-      // Reject the request if the origin is not allowed
       callback(new Error("CORS not allowed"), false);
     }
   },
@@ -65,20 +55,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*"); 
-//   res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS"); 
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-//   ); 
-//   if (req.method === "OPTIONS") {
-//     return res.status(200).end();
-//   }
-//   next();
-// });
-// app.use(cors());
-
 const storage = multer.diskStorage({
    fileFilter: (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/gif', 'application/pdf'];
@@ -103,7 +79,6 @@ app.post(
         folder: "uploads",
       });
 
-      // console.log("Rsss: ", result);
 
       res.status(200).json({
         message: "Image uploaded successfully!",

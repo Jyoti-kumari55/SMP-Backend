@@ -96,7 +96,8 @@ router.get("/followingPosts", isAuthenticated, async (req, res) => {
       .json({ error: "Internal server error.", error: error.message });
   
   }
-})
+});
+
 // Get a post by id and get all comment
 router.get("/:postId", isAuthenticated, async (req, res) => {
   const { postId } = req.params;
