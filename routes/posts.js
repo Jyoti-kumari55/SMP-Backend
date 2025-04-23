@@ -69,6 +69,20 @@ router.get("/allPosts", isAuthenticated, async (req, res) => {
   }
 });
 
+// Get all posts from all users
+router.get("/allUsersPosts", isAuthenticated, async (req, res) => {
+  try {
+    const allUserPosts = await Post.find({ postId: { $exists: false } }).populate("userId", "-password");
+
+    return res.status(200).json({ posts: allUserPosts});
+  } catch (error) {
+    console.error("Error fetching all users' posts:", error);
+    res
+      .status(500)
+      .json({ error: "Internal server error.", message: error.message });
+  }
+});
+
 // Get all followings user posts
 router.get("/followingPosts", isAuthenticated, async (req, res) => {
   try {
@@ -213,5 +227,7 @@ router.post("/like/:postId", isAuthenticated, async (req, res) => {
       .json({ message: "Internal server error.", error: error.message });
   }
 });
+
+
 
 module.exports = router;
